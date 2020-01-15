@@ -5,13 +5,15 @@ import MoviesTable from "../Components/MoviesTable";
 import Pagination from "../common/pagination";
 import { Paginate } from "../utils/paginate";
 import ListGroup from "../common/listGroup";
+import _ from "lodash";
 
 class Movies extends Component {
   state = {
     movies: [],
     genres: [],
     pageSize: 4,
-    currentPage: 1
+    currentPage: 1,
+    sortColumn: { path: "title", order: "asc" }
   };
 
   handleDelete = movie => {
@@ -19,7 +21,7 @@ class Movies extends Component {
     this.setState({ movies: movies });
   };
   componentDidMount() {
-    const genres = [{ name: "All movies" }, ...getGenres()];
+    const genres = [{ _id: "", name: "All movies" }, ...getGenres()];
     this.setState({ movies: getMovies(), genres });
   }
   handlePageChange = page => {
@@ -28,14 +30,30 @@ class Movies extends Component {
   handleItemSelect = item => {
     this.setState({ currentPage: 1, selectedGenre: item });
   };
+  handleSort = path => {
+    const sortColumn = { ...this.state.sortColumn };
+    if (sortColumn.path === path) {
+      sortColumn.order = sortColumn.order === "asc" ? "desc" : "asc";
+    } else {
+      sortColumn.path = path;
+      sortColumn.order = "asc";
+    }
+
+    this.setState({ sortColumn: sortColumn });
+  };
   render() {
     const allMovies = this.state.movies;
+    const sortColumn = this.state.sortColumn;
     const filtered =
       this.state.selectedGenre && this.state.selectedGenre._id
-        ? allMovies.filter(m => m.genre._id == this.state.selectedGenre._id)
+        ? allMovies.filter(m => m.genre._id === this.state.selectedGenre._id)
         : allMovies;
+    const sortedList = _.sortBy(filtered, [
+      sortColumn.path,
+      [sortColumn.order]
+    ]);
     var movies = Paginate(
-      filtered,
+      sortedList,
       this.state.currentPage,
       this.state.pageSize
     );
@@ -58,6 +76,7 @@ class Movies extends Component {
           <MoviesTable
             movies={movies}
             onDelete={movie => this.handleDelete(movie)}
+            onSort={path => this.handleSort(path)}
           ></MoviesTable>
           {
             <Pagination
