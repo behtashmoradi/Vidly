@@ -37,12 +37,12 @@ class Movies extends Component {
   getPagedData() {
     const allMovies = this.state.movies;
     const sortColumn = this.state.sortColumn;
-    console.log(sortColumn.order);
+
     const filtered =
       this.state.selectedGenre && this.state.selectedGenre._id
         ? allMovies.filter(m => m.genre._id === this.state.selectedGenre._id)
         : allMovies;
-    const sortedList = _.sortBy(
+    const sortedList = _.orderBy(
       filtered,
       [sortColumn.path],
       [sortColumn.order]
