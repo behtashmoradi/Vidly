@@ -55,7 +55,7 @@ class Movies extends Component {
     return { totalCount: sortedList.length, data: movies };
   }
   render() {
-    const { totalCount: count, data: movies } = this.getPagedData();
+    const { totalCount: count, data } = this.getPagedData();
 
     if (count === 0) {
       return <p>There are no movie in the Database</p>;
@@ -73,7 +73,7 @@ class Movies extends Component {
         <div className="col">
           <p>There are {count} movie(s) in the database</p>
           <MoviesTable
-            movies={movies}
+            movies={data}
             sortColumn={this.state.sortColumn}
             onDelete={this.handleDelete}
             onSort={path => this.handleSort(path)}
